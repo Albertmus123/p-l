@@ -1,14 +1,14 @@
 from .models import MyUser
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.admin import UserAdmin as BaseAdmin
 
 
-class UserAdmin(BaseUserAdmin):
-    list_display = ["email", "is_admin"]
-    list_filter = ["is_admin"]
+class UserAdmin(BaseAdmin):
+    list_display = ["email", "username", "is_active", "is_staff", "is_superuser"]
+    list_filter = ["is_staff"]
     fieldsets = [
         (None, {"fields": ["email", "password"]}),
-        ("Permissions", {"fields": ["is_admin"]}),
+        ("Permissions", {"fields": ["is_staff"]}),
     ]
 
     search_fields = ["email"]

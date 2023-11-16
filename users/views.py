@@ -7,7 +7,7 @@ from django.contrib.auth.views import PasswordResetView
 from django.contrib.auth.decorators import login_required
 from .models import MyUser
 from django.core.mail import send_mail
-from work1.settings import settings
+
 
 def create_user(request):
     if request.method == "POST":

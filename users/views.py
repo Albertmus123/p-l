@@ -1,18 +1,16 @@
-from django.http import BadHeaderError, HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
+from django.http import  HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render,redirect
-from django.urls import reverse_lazy
-from .forms import UserCreationForm
-from django.contrib.auth.views import LoginView
-from django.contrib.auth.views import PasswordResetView
+from .forms import UserCreationForm,OTPForm
 from django.contrib.auth.decorators import login_required
-from .models import MyUser
+from .models import MyUser,OTP
 from django.core.mail import send_mail
-from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from jose import JWTError, jwt
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
-
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import authenticate, login
+import random
 
 
 sender_of_email = settings.EMAIL_HOST_USER
@@ -32,21 +30,51 @@ def create_user(request):
     return render(request, "create_account.html", {"form": form})
 
 
+def login(request):
+    if request.method == "POST":
+        user_email = request.POST['email']
+        user_password = request.POST['password']
+        user = authenticate(request,email=user_email, password=user_password)
+                
+        if user is not None:
+            code = random.randint(200000,999999)
+            subject = '2 Factor Authentication'
+            # Render HTML content from the email template
+            html_message = render_to_string('otp_email.html', {
+                'code': code,
+                'user': user
+            })
+            send_mail(
+                    subject=subject,
+                    message='',  # Leave the message empty since you're using HTML
+                    from_email=sender_of_email,  # Replace with your email address
+                    recipient_list=[user_email],
+                    html_message=html_message,
+                )
+            new_code = OTP.objects.create(code=code,user=user)
+            new_code.save()
+            return redirect('/otp_page')
+         
+        else:
+            print("credential envalid")
+            return render(request, 'login.html', {'error_message': 'Invalid login credentials'})
+ 
+    return render(request, "login.html")
 
-class CustomLoginView(LoginView):
-    template_name = 'login.html'  # Provide your login template
-    fields = ["email", "password"]
 
-    def form_valid(self, form):
-        response = super().form_valid(form)
+def otp_render(request):
+    if request.method == "POST":
+        code = request.POST['code']
+        code_veriefy = OTP.objects.get(code=code)
+        if code_veriefy is not None:
+            user = MyUser.objects.get(email=code_veriefy.user.email)
+            login(request,user)
+            return redirect('dashboard')
+        else:
+            return HttpResponseBadRequest('Invalid')
 
-        if not self.request.user.is_authenticated:
-            return redirect('login')
-
-        return response
-
-    def get_success_url(self):
-        return reverse_lazy('dashboard')
+    return render(request, "otp.html")
+                
 
 
 
@@ -56,7 +84,6 @@ def dashboard(request):
     return render(request, 'dashboard.html')
 
         
-
 
 
 def forget_password(request):

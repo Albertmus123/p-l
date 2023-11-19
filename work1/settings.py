@@ -49,6 +49,9 @@ INSTALLED_APPS = [
     # social providers
     "allauth.socialaccount.providers.github", # new
     'allauth.socialaccount.providers.google',
+    # otp app
+    'django_otp',
+    'django_otp.plugins.otp_totp',
 ]
 
 

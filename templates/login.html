@@ -10,12 +10,14 @@
     <h1>Login form</h1>
     <form  method="post">
         {% csrf_token %}
-        {{ form.as_p }}
+        <input type="email" name="email"> <br>
+        <input type="password" name="password">
         <button type="submit">Login</button>
-        <a href="{% provider_login_url 'github' %}">Sign In with github !</a>
-        <a href="{% provider_login_url 'google' %}">Sign In with Google</a>
-        <a href="{% url 'password_reset' %}">Forget Password ?</a>
     </form>
+
+    <a href="{% provider_login_url 'github' %}">Sign In with github !</a>
+    <a href="{% provider_login_url 'google' %}">Sign In with Google</a>
+    <a href="{% url 'password_reset' %}">Forget Password ?</a>
     
 </body>
 </html>

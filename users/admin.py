@@ -1,4 +1,4 @@
-from .models import MyUser
+from .models import MyUser,OTP
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseAdmin
 
@@ -16,3 +16,4 @@ class UserAdmin(BaseAdmin):
     filter_horizontal = []
 
 admin.site.register(MyUser, UserAdmin)
+admin.site.register(OTP)

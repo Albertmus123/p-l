@@ -3,8 +3,9 @@ from django.contrib.auth import views as auth_views
 from .views import *
 
 urlpatterns = [
-    path('login', CustomLoginView.as_view(), name="login"),
-    path('logout/', auth_views.LogoutView.as_view(), name = 'logout') ,  
+    path('login', login, name="login"),
+    path('logout/', auth_views.LogoutView.as_view(), name = 'logout'), 
+    path('otp_page/', otp_render, name = 'otp_page'), 
     path('sign-up', create_user, name="create_user"),
     path('dashboard',dashboard, name="dashboard"),
     path('password_reset/', forget_password, name='password_reset'),
